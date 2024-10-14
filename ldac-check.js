@@ -2,12 +2,14 @@
 /**
  * A CLI that uses the ldac profile validator to check an RO-Crate metadata document.
  */
-const { program } = require('commander');
-const fs = require('fs');
-const path = require('path');
-const { ROCrate } = require('ro-crate');
-const { LdacProfile } = require('./index.js');
-const { version } = require('./package.json');
+import { program } from 'commander';
+import fs from 'fs';
+import path from 'path';
+import { ROCrate } from 'ro-crate';
+import { LdacProfile } from './index.js';
+import packageJson from './package.json' assert { type: 'json' };
+
+const { version } = packageJson;
 
 program
   .showHelpAfterError()
@@ -25,7 +27,10 @@ program.parse(process.argv);
 function main(cratePath, options) {
   try {
     const opt = { alwaysAsArray: true, link: true };
-    const crate = new ROCrate(JSON.parse(fs.readFileSync(cratePath, 'utf8')), opt);
+    const crate = new ROCrate(
+      JSON.parse(fs.readFileSync(cratePath, 'utf8')),
+      opt
+    );
     var result = LdacProfile.validate(crate);
     if (options.errors) {
       console.log(result.errors);
@@ -40,4 +45,3 @@ function main(cratePath, options) {
     }
   }
 }
-
